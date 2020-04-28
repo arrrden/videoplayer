@@ -42,8 +42,10 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "@xstate/react": "^0.8.1",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "xstate": "^4.9.1"
   }
 }
