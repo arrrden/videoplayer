@@ -30,6 +30,10 @@ const videoMachine = new Machine({
         paused: {
           on: {
             PLAY: { target: 'playing', actions: ['playVideo'] },
+            SET_TIME: {
+              target: 'paused',
+              actions: ['setVideoTiming', assign({ elapsed: context => context.video.currentTime })],
+            },
           },
         },
         playing: {
@@ -41,6 +45,10 @@ const videoMachine = new Machine({
               actions: assign({
                 elapsed: context => context.video.currentTime,
               }),
+            },
+            SET_TIME: {
+              target: 'playing',
+              actions: ['setVideoTiming', assign({ elapsed: context => context.video.currentTime })],
             },
           },
         },
@@ -71,14 +79,20 @@ const restartVideo = context => {
   context.video.play()
 }
 
+const setVideoTiming = (context, event) => {
+  context.video.currentTime = event.payload
+}
+
 const App = () => {
   const ref = useRef(null)
   const [current, send] = useMachine(videoMachine, {
-    actions: { playVideo, pauseVideo, restartVideo },
+    actions: { playVideo, pauseVideo, restartVideo, setVideoTiming },
   })
   const { duration, elapsed } = current.context
 
-  console.log(current.value)
+  const TIMEBAR = arg => {
+    send({ type: 'SET_TIME', payload: arg })
+  }
 
   return (
     <div>
@@ -102,7 +116,7 @@ const App = () => {
         onEnded={() => send('END')}
       />
       <div className="controls">
-        <Bar />
+        <Bar elapsed={elapsed} duration={duration} time={TIMEBAR} />
         <button
           onClick={() => {
             // if current state is playing -> onClick send pause
@@ -119,18 +133,23 @@ const App = () => {
 
 export default App
 
-const Bar = () => {
+const Bar = ({ elapsed, duration, time }) => {
   const barRef = useRef()
   const [x, setX] = useState({
     x: 0,
   })
-  const [progress, setProgress] = useState(0)
+  const [progress, setProgress] = useState(elapsed)
 
   useEffect(() => {
-    console.log(progress)
     const el = barRef.current
     setProgress((x.x / el.offsetWidth) * 100)
+    time(Math.round((progress / 100) * duration))
   }, [x])
+
+  useEffect(() => {
+    barRef.current.style = `
+    background-image: linear-gradient(to right, palevioletred ${(elapsed / duration) * 100}%, palegreen 0)`
+  }, [elapsed])
 
   const handleMouseDown = e => {
     const handleMouseOffset = e => {
@@ -154,7 +173,6 @@ const StyledBar = styled.div`
   width: 100%;
   height: 10px;
   background-color: palegreen;
-  background-image: ${({ bg }) => `linear-gradient(to right, palevioletred ${bg}%, palegreen 0)`};
 
   .bar {
     width: 100%;
