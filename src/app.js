@@ -1,4 +1,5 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
+import styled from 'styled-components'
 import { useMachine } from '@xstate/react'
 import { Machine, assign } from 'xstate'
 
@@ -80,8 +81,9 @@ const App = () => {
   console.log(current.value)
 
   return (
-    <>
+    <div>
       <video
+        width="600px"
         ref={ref}
         data-testid="video"
         src="https://www.dropbox.com/s/nkwaj2i8c4ljz6f/Peter%20Tscherkassky%20-%20L%27Arriv%C3%A9e%20%28Teaser%29.mp4?raw=1"
@@ -100,6 +102,7 @@ const App = () => {
         onEnded={() => send('END')}
       />
       <div className="controls">
+        <Bar />
         <button
           onClick={() => {
             // if current state is playing -> onClick send pause
@@ -110,8 +113,51 @@ const App = () => {
         </button>
         {Math.round(elapsed)} - {Math.round(duration)}
       </div>
-    </>
+    </div>
   )
 }
 
 export default App
+
+const Bar = () => {
+  const barRef = useRef()
+  const [x, setX] = useState({
+    x: 0,
+  })
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    console.log(progress)
+    const el = barRef.current
+    setProgress((x.x / el.offsetWidth) * 100)
+  }, [x])
+
+  const handleMouseDown = e => {
+    const handleMouseOffset = e => {
+      if (e.offsetX < 0) setX({ x: 0 })
+      setX({ x: e.offsetX })
+    }
+    document.addEventListener('mousemove', handleMouseOffset)
+    document.addEventListener('mouseup', () => {
+      document.removeEventListener('mousemove', handleMouseOffset)
+    })
+  }
+
+  return (
+    <StyledBar bg={progress}>
+      <div ref={barRef} className="bar" id="bar" onMouseDown={e => handleMouseDown(e.nativeEvent)} />
+    </StyledBar>
+  )
+}
+
+const StyledBar = styled.div`
+  width: 100%;
+  height: 10px;
+  background-color: palegreen;
+  background-image: ${({ bg }) => `linear-gradient(to right, palevioletred ${bg}%, palegreen 0)`};
+
+  .bar {
+    width: 100%;
+    height: 100%;
+  }
+`
