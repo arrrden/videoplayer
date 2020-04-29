@@ -6,3 +6,6 @@ Super simple / rough and ready video player using xstate and react
 ## Users Can: 
 - Play and pause a video ✅
 - navigate through the video using the progress bar ✅
+
+## To Do: 
+- She's real ugly 
