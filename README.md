@@ -8,4 +8,5 @@ Super simple / rough and ready video player using xstate and react
 - navigate through the video using the progress bar ✅
 
 ## To Do: 
-- She's real ugly 
+- after dragging progress bar focus should return to the video
+- format duration and elapsed time
