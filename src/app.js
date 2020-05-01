@@ -1,8 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components'
 import { useMachine } from '@xstate/react'
 import { Machine, assign } from 'xstate'
-import Play from './assets/play.svg'
+
+import Bar from './components/Bar/Bar'
+import Timer from './components/Timer/Timer'
+import PlayPause from './components/PlayPause/PlayPause'
 
 const videoMachine = new Machine({
   id: 'videoMachine',
@@ -143,22 +146,12 @@ const App = () => {
           onTimeUpdate={() => send('TIMING')}
           onEnded={() => send('END')}
         />
-        <button
-          style={{
-            background: 'transparent',
-            height: '100%',
-            width: '100%',
-            border: 'none',
-            margin: 'auto',
-            zIndex: '11',
-          }}
-          onClick={() => {
-            // if current state is playing -> onClick send pause
+        <PlayPause
+          click={() => {
             current.matches({ ready: 'playing' }) ? send('PAUSE') : send('PLAY')
-          }}>
-          {/* if playing return 'pause' else 'play' */}
-          {current.matches({ ready: 'playing' }) ? React.Fragment : <img width="50" src={Play} alt="play button" />}
-        </button>
+          }}
+          current={current.value}
+        />
       </div>
       <div
         className="controls"
@@ -176,9 +169,7 @@ const App = () => {
             justifyContent: 'space-evenly',
             alignItems: 'center',
           }}>
-          <span>
-            {Math.round(elapsed)} - {Math.round(duration)}
-          </span>
+          <Timer elapsed={elapsed} duration={duration} />
           <Bar elapsed={elapsed} duration={duration} time={TIMEBAR} />
         </div>
       </div>
@@ -187,50 +178,3 @@ const App = () => {
 }
 
 export default App
-
-const Bar = ({ elapsed, duration, time }) => {
-  const barRef = useRef()
-  const [x, setX] = useState({
-    x: 0,
-  })
-  const [progress, setProgress] = useState(elapsed)
-
-  useEffect(() => {
-    const el = barRef.current
-    setProgress((x.x / el.offsetWidth) * 100)
-    time((progress / 100) * duration)
-  }, [x])
-
-  useEffect(() => {
-    barRef.current.style = `
-    background-image: linear-gradient(to right, palevioletred ${(elapsed / duration) * 100}%, palegreen 0)`
-  }, [elapsed])
-
-  const handleMouseDown = e => {
-    const handleMouseOffset = e => {
-      if (e.offsetX < 0) setX({ x: 0 })
-      setX({ x: e.offsetX })
-    }
-    document.addEventListener('mousemove', handleMouseOffset)
-    document.addEventListener('mouseup', () => {
-      document.removeEventListener('mousemove', handleMouseOffset)
-    })
-  }
-
-  return (
-    <StyledBar bg={progress}>
-      <div ref={barRef} className="bar" id="bar" onMouseDown={e => handleMouseDown(e.nativeEvent)} />
-    </StyledBar>
-  )
-}
-
-const StyledBar = styled.div`
-  width: 80%;
-  height: 10px;
-  background-color: palegreen;
-
-  .bar {
-    width: 100%;
-    height: 100%;
-  }
-`
