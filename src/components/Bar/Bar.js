@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import styled from 'styled-components'
+import styled from '@emotion/styled'
 
 const Bar = ({ current, time }) => {
   const barRef = useRef()

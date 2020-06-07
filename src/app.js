@@ -1,5 +1,7 @@
 import React, { useRef, useEffect } from 'react'
 import { useMachine } from '@xstate/react'
+import styled from '@emotion/styled'
+
 import { videoMachine } from './__machine/video.machine'
 import * as config from './__machine/video.actions'
 
@@ -27,37 +29,9 @@ const App = ({ url }) => {
   }, [ref])
 
   return (
-    <div
-      style={{
-        padding: 0,
-        boxSizing: 'border-box',
-        maxWidth: 600,
-        height: 290,
-        border: '5px solid black',
-        borderRadius: 12,
-        overflow: 'hidden',
-        display: 'grid',
-        gridTemplateRows: 'auto 30px',
-        boxShadow: '8px 8px palegreen',
-        fontFamily: 'helvetica, sans-serif',
-      }}>
-      <div
-        style={{
-          borderBottom: '5px solid black',
-          maxWidth: 600,
-          position: 'relative',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: '12',
-        }}>
-        <video
-          style={{ position: 'absolute', width: '100%', zIndex: '10' }}
-          ref={ref}
-          data-testid="video"
-          src={url}
-          type="video/mp4"
-        />
+    <StyledWrapper>
+      <div className="container">
+        <video className="video" ref={ref} data-testid="video" src={url} type="video/mp4" />
         <PlayPause
           click={() => {
             current.matches({ ready: 'playing' }) ? send('PAUSE') : send('PLAY')
@@ -65,28 +39,59 @@ const App = ({ url }) => {
           current={current.value}
         />
       </div>
-      <div
-        className="controls"
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-evenly',
-          alignItems: 'center',
-          margin: '0, 4%',
-        }}>
-        <div
-          style={{
-            width: '90%',
-            display: 'flex',
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
+      <div className="controls">
+        <div className="timer">
           <Timer current={current.context} />
           <Bar current={current.context} time={updateBar} />
         </div>
       </div>
-    </div>
+    </StyledWrapper>
   )
 }
+
+const StyledWrapper = styled.div`
+  padding: 0;
+  box-sizing: border-box;
+  max-width: 600px;
+  height: 290px;
+  border: 5px solid black;
+  border-radius: 12px;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 30px;
+  box-shadow: 8px 8px palegreen;
+  font-family: sans-serif;
+
+  .container {
+    border-bottom: 5px solid black;
+    max-width: 600px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 12;
+  }
+
+  .video {
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+  }
+
+  .controls {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin: 0, 4%;
+
+    .timer {
+      width: 90%;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+  }
+`
 
 export default App
