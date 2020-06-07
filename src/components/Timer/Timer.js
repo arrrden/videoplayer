@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Timer = ({ duration, elapsed }) => {
+const Timer = ({ current }) => {
   // Take in integer (time) in second and reformats value to 'mm ss' or 'hh mm ss'
   function formatTime(time) {
     const timeArr = []
@@ -30,7 +30,7 @@ const Timer = ({ duration, elapsed }) => {
       : `${formattedTime[0]} ${formattedTime[1]}`
   }
 
-  return <span>{`${formatTime(elapsed)}: ${formatTime(duration)}`}</span>
+  return <span>{`${formatTime(current.elapsed)}: ${formatTime(current.duration)}`}</span>
 }
 
 export default Timer

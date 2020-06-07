@@ -22,6 +22,7 @@ const PlayPause = ({ click, current }) => {
 const Button = ({ click, children }) => {
   return (
     <button
+      data-testid="button"
       style={{
         background: 'transparent',
         height: '100%',

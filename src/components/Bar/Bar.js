@@ -1,23 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 
-const Bar = ({ elapsed, duration, time }) => {
+const Bar = ({ current, time }) => {
   const barRef = useRef()
   const [x, setX] = useState({
     x: 0,
   })
-  const [progress, setProgress] = useState(elapsed)
+  const [progress, setProgress] = useState(current.elapsed)
 
   useEffect(() => {
     const el = barRef.current
     setProgress((x.x / el.offsetWidth) * 100)
-    time((progress / 100) * duration)
+    time((progress / 100) * current.duration)
   }, [x])
 
   useEffect(() => {
     barRef.current.style = `
-    background-image: linear-gradient(to right, palevioletred ${(elapsed / duration) * 100}%, palegreen 0)`
-  }, [elapsed])
+    background-image: linear-gradient(to right, palevioletred ${(current.elapsed / current.duration) *
+      100}%, palegreen 0)`
+  }, [current.elapsed])
 
   const handleMouseDown = e => {
     const handleMouseOffset = e => {
@@ -32,7 +33,7 @@ const Bar = ({ elapsed, duration, time }) => {
 
   return (
     <StyledBar bg={progress}>
-      <div ref={barRef} className="bar" id="bar" onMouseDown={e => handleMouseDown(e.nativeEvent)} />
+      <div data-testid="bar" ref={barRef} className="bar" id="bar" onMouseDown={e => handleMouseDown(e.nativeEvent)} />
     </StyledBar>
   )
 }

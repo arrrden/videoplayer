@@ -5,7 +5,9 @@ import '@testing-library/jest-dom/extend-expect'
 
 import App from './app'
 
-test('it renders without crashing', () => {
-  const { getByTestId } = render(<App />)
-  expect(getByTestId('video')).toBeInTheDOM()
+describe('When loading the app', () => {
+  test('it renders without crashing', () => {
+    const { getByTestId } = render(<App />)
+    expect(getByTestId('video')).toBeInTheDocument()
+  })
 })
